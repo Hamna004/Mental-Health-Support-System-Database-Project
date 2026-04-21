@@ -31,9 +31,8 @@ The system utilizes advanced database concepts including:
 * **Triggers & Stored Procedures:** Specifically for the recommendation engine and automated reporting.
 * **Complex Queries:** Utilization of `GROUP BY`, `JOINS`, and Aggregations for user analytics.
 
-## 🚀 Getting Started
-*(Note: These are placeholder instructions. Update them as your code is finalized.)*
-1. Clone the repository.
-2. Configure your Oracle Database connection in the backend settings.
-3. Run `npm install` for frontend dependencies.
-4. Launch the server and explore the platform!
+Member List:
+Hamna Khalid (23K-0700)
+Aiman Nadeem Khan (23K-0876) 
+Amna Rais (23K-0824) 
+Maryiam Khan (23K-0585) 
