@@ -1,0 +1,365 @@
+
+document.addEventListener('DOMContentLoaded', function() {
+    
+    const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+    if (!currentUser || currentUser.role !== 'admin') {
+        window.location.href = 'index.html';
+        return;
+    }
+
+    setupAdminDashboard(currentUser);
+});
+
+function setupAdminDashboard(user) {
+    document.getElementById('user-greeting').textContent = `Hello, ${user.name}!`;
+    document.getElementById('user-role').textContent = 'Admin';
+    
+    document.getElementById('admin-name').textContent = user.name;
+    document.getElementById('admin-email').textContent = user.email;
+    if (user.createdAt) {
+        document.getElementById('member-since').textContent = new Date(user.createdAt).getFullYear();
+    }
+    
+    loadAdminStats();
+    loadUserManagement();
+    loadPatientAssignment();
+    loadSystemReports();
+    
+    setupDashboardNavigation();
+    
+    setupEventListeners();
+}
+
+function setupEventListeners() {
+    
+    document.getElementById('logout-btn').addEventListener('click', function() {
+        localStorage.removeItem('currentUser');
+        window.location.href = 'index.html';
+    });
+
+    const addUserBtn = document.getElementById('add-user-btn');
+    if (addUserBtn) {
+        addUserBtn.addEventListener('click', showAddUserModal);
+    }
+
+    const assignBtn = document.getElementById('assign-btn');
+    if (assignBtn) {
+        assignBtn.addEventListener('click', assignPatient);
+    }
+}
+
+function setupDashboardNavigation() {
+    document.querySelectorAll('.dashboard-link').forEach(link => {
+        link.addEventListener('click', function(e) {
+            e.preventDefault();
+            const sectionId = this.getAttribute('data-section');
+            
+            document.querySelectorAll('.dashboard-section').forEach(section => {
+                section.classList.remove('active');
+            });
+            
+            document.getElementById(sectionId).classList.add('active');
+            
+            document.querySelectorAll('.dashboard-link').forEach(l => l.classList.remove('active'));
+            this.classList.add('active');
+            
+            loadSectionData(sectionId);
+        });
+    });
+}
+
+function loadSectionData(sectionId) {
+    switch(sectionId) {
+        case 'stats':
+            loadAdminStats();
+            break;
+        case 'user-management':
+            loadUserManagement();
+            break;
+        case 'patient-assignment':
+            loadPatientAssignment();
+            break;
+        case 'system-reports':
+            loadSystemReports();
+            break;
+    }
+}
+
+function loadAdminStats() {
+    const allUsers = JSON.parse(localStorage.getItem('allUsers') || '[]');
+    const totalUsers = allUsers.length;
+    const therapists = allUsers.filter(u => u.role === 'therapist').length;
+    const patients = allUsers.filter(u => u.role === 'user').length;
+    const admins = allUsers.filter(u => u.role === 'admin').length;
+    
+    const statsGrid = document.getElementById('stats-grid');
+    if (!statsGrid) return;
+    
+    statsGrid.innerHTML = '';
+    
+    const stats = [
+        { 
+            title: 'Total Users', 
+            value: totalUsers, 
+            icon: '👥',
+            color: '#4a6fa5'
+        },
+        { 
+            title: 'Therapists', 
+            value: therapists, 
+            icon: '👨‍⚕️',
+            color: '#6b8cbc'
+        },
+        { 
+            title: 'Patients', 
+            value: patients, 
+            icon: '😊',
+            color: '#28a745'
+        },
+        { 
+            title: 'Admins', 
+            value: admins, 
+            icon: '🛡️',
+            color: '#ff7e5f'
+        }
+    ];
+    
+    stats.forEach(stat => {
+        const statCard = document.createElement('div');
+        statCard.className = 'stat-card';
+        statCard.innerHTML = `
+            <div class="stat-icon" style="background-color: ${stat.color}20; color: ${stat.color}">${stat.icon}</div>
+            <div class="stat-value">${stat.value}</div>
+            <div class="stat-title">${stat.title}</div>
+        `;
+        statsGrid.appendChild(statCard);
+    });
+}
+
+function loadUserManagement() {
+    const allUsers = JSON.parse(localStorage.getItem('allUsers') || '[]');
+    const usersList = document.getElementById('users-list');
+    
+    if (!usersList) return;
+    
+    usersList.innerHTML = '';
+    
+    if (allUsers.length === 0) {
+        usersList.innerHTML = '<div class="empty-state">No users found.</div>';
+        return;
+    }
+    
+    allUsers.forEach(user => {
+        const userCard = document.createElement('div');
+        userCard.className = 'user-card';
+        userCard.innerHTML = `
+            <div class="user-info">
+                <h3>${user.name}</h3>
+                <p>Email: ${user.email}</p>
+                <p>Role: <span class="role-tag ${user.role}">${user.role}</span></p>
+                ${user.specialty ? `<p>Specialty: ${user.specialty}</p>` : ''}
+                <p>Status: <span class="status-tag ${user.status || 'active'}">${user.status || 'active'}</span></p>
+                <p>Joined: ${new Date(user.createdAt || new Date()).toLocaleDateString()}</p>
+            </div>
+            <div class="user-actions">
+                <button class="btn btn-secondary edit-user" data-user-id="${user.id}">Edit</button>
+                <button class="btn btn-danger delete-user" data-user-id="${user.id}">Delete</button>
+            </div>
+        `;
+        usersList.appendChild(userCard);
+    });
+
+    document.querySelectorAll('.edit-user').forEach(button => {
+        button.addEventListener('click', function() {
+            const userId = parseInt(this.getAttribute('data-user-id'));
+            editUser(userId);
+        });
+    });
+    
+    document.querySelectorAll('.delete-user').forEach(button => {
+        button.addEventListener('click', function() {
+            const userId = parseInt(this.getAttribute('data-user-id'));
+            deleteUser(userId);
+        });
+    });
+}
+
+function loadPatientAssignment() {
+    const allUsers = JSON.parse(localStorage.getItem('allUsers') || '[]');
+    const patients = allUsers.filter(u => u.role === 'user');
+    const therapists = allUsers.filter(u => u.role === 'therapist');
+    
+    const assignPatient = document.getElementById('assign-patient');
+    const assignTherapist = document.getElementById('assign-therapist');
+    
+    if (assignPatient) {
+        assignPatient.innerHTML = '<option value="">Choose a patient</option>';
+        patients.forEach(patient => {
+            const option = document.createElement('option');
+            option.value = patient.id;
+            option.textContent = patient.name;
+            assignPatient.appendChild(option);
+        });
+    }
+    
+    if (assignTherapist) {
+        assignTherapist.innerHTML = '<option value="">Choose a therapist</option>';
+        therapists.forEach(therapist => {
+            const option = document.createElement('option');
+            option.value = therapist.id;
+            option.textContent = therapist.name;
+            assignTherapist.appendChild(option);
+        });
+    }
+    
+    displayCurrentAssignments();
+}
+
+function displayCurrentAssignments() {
+    const allUsers = JSON.parse(localStorage.getItem('allUsers') || '[]');
+    const assignments = allUsers.filter(u => u.role === 'user' && u.therapistId);
+    const assignmentsContent = document.getElementById('assignments-content');
+    
+    if (!assignmentsContent) return;
+    
+    if (assignments.length === 0) {
+        assignmentsContent.innerHTML = '<div class="empty-state">No patient assignments yet.</div>';
+        return;
+    }
+    
+    let assignmentsHTML = '';
+    
+    assignments.forEach(patient => {
+        const therapist = allUsers.find(u => u.id === patient.therapistId);
+        assignmentsHTML += `
+            <div class="assignment-card">
+                <div class="assignment-info">
+                    <h4>${patient.name}</h4>
+                    <p>Assigned to: ${therapist ? therapist.name : 'Unknown Therapist'}</p>
+                </div>
+                <button class="btn btn-danger remove-assignment" data-patient-id="${patient.id}">Remove</button>
+            </div>
+        `;
+    });
+    
+    assignmentsContent.innerHTML = assignmentsHTML;
+    
+
+    document.querySelectorAll('.remove-assignment').forEach(button => {
+        button.addEventListener('click', function() {
+            const patientId = parseInt(this.getAttribute('data-patient-id'));
+            removeAssignment(patientId);
+        });
+    });
+}
+
+function assignPatient() {
+    const patientId = parseInt(document.getElementById('assign-patient').value);
+    const therapistId = parseInt(document.getElementById('assign-therapist').value);
+    
+    if (!patientId || !therapistId) {
+        alert('Please select both a patient and a therapist');
+        return;
+    }
+    
+    const allUsers = JSON.parse(localStorage.getItem('allUsers') || '[]');
+    const patientIndex = allUsers.findIndex(u => u.id === patientId);
+    
+    if (patientIndex !== -1) {
+        allUsers[patientIndex].therapistId = therapistId;
+        localStorage.setItem('allUsers', JSON.stringify(allUsers));
+        
+        alert('Patient assigned successfully!');
+        displayCurrentAssignments();
+        loadAdminStats();
+        
+    
+        document.getElementById('assign-patient').value = '';
+        document.getElementById('assign-therapist').value = '';
+    }
+}
+
+function removeAssignment(patientId) {
+    if (confirm('Are you sure you want to remove this assignment?')) {
+        const allUsers = JSON.parse(localStorage.getItem('allUsers') || '[]');
+        const patientIndex = allUsers.findIndex(u => u.id === patientId);
+        
+        if (patientIndex !== -1) {
+            allUsers[patientIndex].therapistId = null;
+            localStorage.setItem('allUsers', JSON.stringify(allUsers));
+            
+            alert('Assignment removed successfully');
+            displayCurrentAssignments();
+            loadAdminStats();
+        }
+    }
+}
+
+function loadSystemReports() {
+    const allUsers = JSON.parse(localStorage.getItem('allUsers') || '[]');
+    const totalUsers = allUsers.length;
+    const therapists = allUsers.filter(u => u.role === 'therapist').length;
+    const patients = allUsers.filter(u => u.role === 'user').length;
+    
+    const systemReportsContent = document.getElementById('system-reports-content');
+    if (!systemReportsContent) return;
+    
+    const reportsHTML = `
+        <div class="system-report">
+            <h3>Platform Overview</h3>
+            <div class="report-stats">
+                <div class="report-stat">
+                    <span class="stat-label">Total Users:</span>
+                    <span class="stat-value">${totalUsers}</span>
+                </div>
+                <div class="report-stat">
+                    <span class="stat-label">Therapists:</span>
+                    <span class="stat-value">${therapists}</span>
+                </div>
+                <div class="report-stat">
+                    <span class="stat-label">Patients:</span>
+                    <span class="stat-value">${patients}</span>
+                </div>
+                <div class="report-stat">
+                    <span class="stat-label">Active Users:</span>
+                    <span class="stat-value">${allUsers.filter(u => u.status === 'active').length}</span>
+                </div>
+            </div>
+        </div>
+        
+        <div class="system-report">
+            <h3>User Distribution</h3>
+            <p>Therapists: ${therapists} (${((therapists / totalUsers) * 100).toFixed(1)}%)</p>
+            <p>Patients: ${patients} (${((patients / totalUsers) * 100).toFixed(1)}%)</p>
+            <p>Admins: ${totalUsers - therapists - patients} (${(((totalUsers - therapists - patients) / totalUsers) * 100).toFixed(1)}%)</p>
+        </div>
+    `;
+    
+    systemReportsContent.innerHTML = reportsHTML;
+}
+
+function showAddUserModal() {
+    alert('Add User Modal - This would open a modal to add new users in a real application');
+}
+
+function editUser(userId) {
+    alert(`Edit User ${userId} - This would open an edit form in a real application`);
+}
+
+function deleteUser(userId) {
+    const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+    if (userId === currentUser.id) {
+        alert('You cannot delete your own account');
+        return;
+    }
+    
+    if (confirm('Are you sure you want to delete this user?')) {
+        let allUsers = JSON.parse(localStorage.getItem('allUsers') || '[]');
+        allUsers = allUsers.filter(u => u.id !== userId);
+        localStorage.setItem('allUsers', JSON.stringify(allUsers));
+        
+        alert('User deleted successfully');
+        loadUserManagement();
+        loadAdminStats();
+    }
+}

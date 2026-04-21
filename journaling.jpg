@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contact Us - MindCare</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <!-- Contact Page -->
+    <div id="contact-page">
+        <header>
+            <div class="container header-content">
+                <div class="logo">MindCare</div>
+                <nav>
+                    <ul>
+                        <li><a href="index.html">HOME</a></li>
+                        <li><a href="services.html">SERVICES</a></li>
+                        <li><a href="pricing.html">PRICING</a></li>
+                        <li><a href="testimonials.html">TESTIMONIALS</a></li>
+                        <li><a href="about.html">ABOUT US</a></li>
+                        <li><a href="contact.html" class="active">CONTACT US</a></li>
+                    </ul>
+                </nav>
+                <div class="auth-buttons">
+    <button class="btn btn-secondary" id="login-btn">Login</button>
+    <button class="btn btn-primary" id="register-btn">Register</button>
+</div>
+            </div>
+        </header>
+
+        <!-- Page Header -->
+        <section class="page-header">
+            <div class="container">
+                <h1>Contact Us</h1>
+                <p>Get in touch with our team for any questions or support</p>
+            </div>
+        </section>
+
+        
+
+        <!-- Contact Section -->
+        <section class="contact-info">
+            <div class="container">
+                <div class="contact-grid">
+                    <div class="contact-card">
+                        <div class="contact-icon">
+                            <i class="fas fa-envelope"></i>
+                        </div>
+                        <h3>Email</h3>
+                        <p>support@mindcare.com</p>
+                        <p>We typically respond within 24 hours</p>
+                    </div>
+                    <div class="contact-card">
+                        <div class="contact-icon">
+                            <i class="fas fa-phone"></i>
+                        </div>
+                        <h3>Phone</h3>
+                        <p>+1 (555) 123-HELP</p>
+                        <p>Mon-Fri 9AM-6PM EST</p>
+                    </div>
+                    <div class="contact-card">
+                        <div class="contact-icon">
+                            <i class="fas fa-map-marker-alt"></i>
+                        </div>
+                        <h3>Office</h3>
+                        <p>123 Wellness Street<br>Mental Health City, MH 12345</p>
+                    </div>
+                    <div class="contact-card">
+                        <div class="contact-icon">
+                            <i class="fas fa-comments"></i>
+                        </div>
+                        <h3>Live Chat</h3>
+                        <p>Available 24/7 for urgent support</p>
+                        <p>Click the chat icon in the corner</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Contact Form Section -->
+        <section class="contact-form-section">
+            <div class="container">
+                <div class="form-container">
+                    <h2>Send Us a Message</h2>
+                    <form id="contact-form">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="contact-name">Full Name</label>
+                                <input type="text" id="contact-name" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="contact-email">Email</label>
+                                <input type="email" id="contact-email" required>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="contact-subject">Subject</label>
+                            <input type="text" id="contact-subject" required>
+                        </div>
+                       <div class="form-group horizontal-message">
+    <label for="contact-message">Message</label>
+    <textarea id="contact-message" rows="4" required></textarea>
+</div>
+                        <div class="form-group">
+                            <label for="contact-type">I need help with</label>
+                            <select id="contact-type" required>
+                                <option value="">Select an option</option>
+                                <option value="technical">Technical Support</option>
+                                <option value="billing">Billing Questions</option>
+                                <option value="therapy">Therapy Services</option>
+                                <option value="partnership">Partnership</option>
+                                <option value="other">Other</option>
+                            </select>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Send Message</button>
+                    </form>
+                </div>
+            </div>
+        </section>
+
+        <!-- FAQ Section -->
+        <section class="faq-contact">
+            <div class="container">
+                <h2 class="section-title">Frequently Asked Questions</h2>
+                <div class="faq-grid">
+                    <div class="faq-item">
+                        <h3>How quickly will I hear back from support?</h3>
+                        <p>We typically respond to all inquiries within 24 hours. For urgent matters, please use our live chat feature.</p>
+                    </div>
+                    <div class="faq-item">
+                        <h3>Do you offer emergency mental health support?</h3>
+                        <p>While we provide comprehensive mental health support, we are not an emergency service. If you're experiencing a mental health emergency, please contact emergency services immediately.</p>
+                    </div>
+                    <div class="faq-item">
+                        <h3>Can I schedule a demo of your platform?</h3>
+                        <p>Absolutely! Contact our sales team to schedule a personalized demo of our platform features.</p>
+                    </div>
+                    <div class="faq-item">
+                        <h3>Are you available for partnerships?</h3>
+                        <p>Yes, we're always interested in partnering with organizations that share our mission. Please reach out to our partnerships team.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Social Links -->
+        <section class="social-links-section">
+            <div class="container">
+                <h2 class="section-title">Follow Us</h2>
+                <div class="social-links">
+                    <a href="#" class="social-link">
+                        <i class="fab fa-linkedin"></i>
+                        <span>LinkedIn</span>
+                    </a>
+                    <a href="#" class="social-link">
+                        <i class="fab fa-instagram"></i>
+                        <span>Instagram</span>
+                    </a>
+                    <a href="#" class="social-link">
+                        <i class="fab fa-twitter"></i>
+                        <span>Twitter</span>
+                    </a>
+                    <a href="#" class="social-link">
+                        <i class="fab fa-facebook"></i>
+                        <span>Facebook</span>
+                    </a>
+                </div>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer>
+            <div class="container">
+                <div class="footer-content">
+                    <div class="footer-section">
+                        <h3>MindCare</h3>
+                        <p>Your partner in mental wellness and personal growth.</p>
+                    </div>
+                    <div class="footer-section">
+                        <h3>Quick Links</h3>
+                        <ul>
+                            <li><a href="index.html">Home</a></li>
+                            <li><a href="services.html">Services</a></li>
+                            <li><a href="pricing.html">Pricing</a></li>
+                            <li><a href="about.html">About Us</a></li>
+                        </ul>
+                    </div>
+                    <div class="footer-section">
+                        <h3>Resources</h3>
+                        <ul>
+                            <li><a href="#">Blog</a></li>
+                            <li><a href="#">FAQ</a></li>
+                            <li><a href="#">Support</a></li>
+                            <li><a href="#">Privacy Policy</a></li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="footer-bottom">
+                    <p>&copy; 2025 MindCare. All rights reserved.</p>
+                    <p class="created-by">Created with ❤️ by the MindCare Team</p>
+                </div>
+            </div>
+        </footer>
+    </div>
+
+    <!-- Login Modal -->
+    <div id="login-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Login to MindCare</h2>
+                <button class="close-modal">&times;</button>
+            </div>
+            <form id="login-form">
+                <div class="form-group">
+                    <label for="login-email">Email</label>
+                    <input type="email" id="login-email" required>
+                </div>
+                <div class="form-group">
+                    <label for="login-password">Password</label>
+                    <input type="password" id="login-password" required>
+                </div>
+                <div class="form-group">
+                    <label for="login-role">I am a</label>
+                    <select id="login-role" required>
+                        <option value="">Select Role</option>
+                        <option value="user">User</option>
+                        <option value="therapist">Therapist</option>
+                        <option value="admin">Admin</option>
+                    </select>
+                </div>
+                <button type="submit" class="btn btn-primary" style="width: 100%;">Login</button>
+            </form>
+        </div>
+    </div>
+
+    <div id="register-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Join MindCare</h2>
+                <button class="close-modal">&times;</button>
+            </div>
+            <form id="register-form">
+                <div class="form-group">
+                    <label for="register-name">Full Name</label>
+                    <input type="text" id="register-name" required>
+                </div>
+                <div class="form-group">
+                    <label for="register-email">Email</label>
+                    <input type="email" id="register-email" required>
+                </div>
+                <div class="form-group">
+                    <label for="register-password">Password</label>
+                    <input type="password" id="register-password" required>
+                </div>
+                <div class="form-group">
+                    <label for="register-role">I want to</label>
+                    <select id="register-role" required>
+                        <option value="">Select Option</option>
+                        <option value="user">Get Support</option>
+                        <option value="therapist">Provide Support</option>
+                    </select>
+                </div>
+                <div class="form-group" id="therapist-specialty-group" style="display: none;">
+                    <label for="register-specialty">Specialty</label>
+                    <input type="text" id="register-specialty">
+                </div>
+                <button type="submit" class="btn btn-primary" style="width: 100%;">Create Account</button>
+            </form>
+        </div>
+    </div>
+
+    <script src="js/script.js"></script>
+</body>
+</html>

@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Our Services - MindCare</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div id="landing-page">
+        <header>
+            <div class="container header-content">
+                <div class="logo">MindCare</div>
+                <nav>
+                    <ul>
+                        <li><a href="index.html">HOME</a></li>
+                        <li><a href="services.html" class="active">SERVICES</a></li>
+                        <li><a href="pricing.html">PRICING</a></li>
+                        <li><a href="testimonials.html">TESTIMONIALS</a></li>
+                        <li><a href="about.html">ABOUT US</a></li>
+                        <li><a href="contact.html">CONTACT US</a></li>
+                    </ul>
+                </nav>
+             <div class="auth-buttons">
+    <button class="btn btn-secondary" id="login-btn">Login</button>
+    <button class="btn btn-primary" id="register-btn">Register</button>
+</div>
+            </div>
+        </header>
+
+        <section class="page-header">
+            <div class="container">
+                <h1>Our Services</h1>
+                <p>Comprehensive mental wellness solutions tailored to your needs</p>
+            </div>
+        </section>
+
+        
+        <section id="therapy" class="service-detail">
+            <div class="container">
+                <div class="service-content">
+                    <div class="service-text">
+                        <h2>Therapy Sessions</h2>
+                        <p>Connect with licensed mental health professionals for personalized one-on-one therapy sessions. Our therapists are experienced in various therapeutic approaches to help you navigate life's challenges.</p>
+                        
+                  <div class="service-features">
+                            <div class="feature">
+                                <i class="fas fa-check-circle"></i>
+                                <span>Licensed Professionals</span>
+                            </div>
+                            <div class="feature">
+                                <i class="fas fa-check-circle"></i>
+                                <span>Confidential & Secure</span>
+                            </div>
+                            <div class="feature">
+                                <i class="fas fa-check-circle"></i>
+                                <span>Flexible Scheduling</span>
+                            </div>
+                        </div>
+
+                        <ul>
+                            <li>Individual counseling sessions</li>
+                            <li>Cognitive Behavioral Therapy (CBT)</li>
+                            <li>Mindfulness-based approaches</li>
+                            <li>Trauma-informed care</li>
+                            <li>Online and in-person options</li>
+                        </ul>
+
+                        <a href="#contact" class="btn btn-primary">Book a Session</a>
+                    </div>
+                    <div class="service-image">
+                        <img src="images/threapy.jpg"alt="Therapy Session" class="service-detail-img">
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="mood-tracking" class="service-detail alt">
+            <div class="container">
+                <div class="service-content">
+                    <div class="service-image">
+                        <img src="images/journaling.jpg" alt="Mood Tracking" class="service-detail-img">
+                    </div>
+                    <div class="service-text">
+                        <h2>Mood Tracking</h2>
+                        <p>Monitor your emotional well-being with our comprehensive mood tracking tools. Identify patterns, triggers, and progress over time to better understand your mental health journey.</p>
+                        
+                        <div class="service-features">
+                            <div class="feature">
+                                <i class="fas fa-check-circle"></i>
+                                <span>Daily Mood Logs</span>
+                            </div>
+                            <div class="feature">
+                                <i class="fas fa-check-circle"></i>
+                                <span>Pattern Recognition</span>
+                            </div>
+                            <div class="feature">
+                                <i class="fas fa-check-circle"></i>
+                                <span>Progress Analytics</span>
+                            </div>
+                        </div>
+
+                        <ul>
+                            <li>Track daily emotions and intensity</li>
+                            <li>Visualize mood patterns over time</li>
+                            <li>Identify triggers and coping mechanisms</li>
+                            <li>Set personalized mood goals</li>
+                            <li>Receive insights and recommendations</li>
+                        </ul>
+
+                        <a href="#mood-tracking" class="btn btn-primary">Start Tracking</a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="journaling" class="service-detail">
+            <div class="container">
+                <div class="service-content">
+                    <div class="service-text">
+                        <h2>Journaling</h2>
+                        <p>Express your thoughts and feelings through our guided and free-form journaling platform. Writing can be a powerful tool for self-reflection, emotional processing, and personal growth.</p>
+                        
+                        <div class="service-features">
+                            <div class="feature">
+                                <i class="fas fa-check-circle"></i>
+                                <span>Guided Prompts</span>
+                            </div>
+                            <div class="feature">
+                                <i class="fas fa-check-circle"></i>
+                                <span>Secure Storage</span>
+                            </div>
+                            <div class="feature">
+                                <i class="fas fa-check-circle"></i>
+                                <span>Private Entries</span>
+                            </div>
+                        </div>
+
+                        <ul>
+                            <li>Daily writing prompts and exercises</li>
+                            <li>Gratitude and reflection journals</li>
+                            <li>Goal setting and progress tracking</li>
+                            <li>Emotional expression and processing</li>
+                            <li>Secure, encrypted storage</li>
+                        </ul>
+
+                        <a href="#journaling" class="btn btn-primary">Start Journaling</a>
+                    </div>
+                    <div class="service-image">
+                        <img src="images/moodtracking.jpg" alt="Journaling" class="service-detail-img">
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="additional-services">
+            <div class="container">
+                <h2 class="section-title">Additional Services</h2>
+                <div class="services-grid">
+                    <div class="service-card">
+                        <div class="service-icon">
+                            <img src="images/group-therapy.jpg" alt="Group Therapy" class="service-img">
+                        </div>
+                        <h3>Group Therapy</h3>
+                        <p>Join supportive group sessions and connect with others on similar journeys</p>
+                        <a href="#" class="btn btn-secondary">Learn More</a>
+                    </div>
+                    <div class="service-card">
+                        <div class="service-icon">
+                            <img src="images/workshops.jpg" alt="Workshops" class="service-img">
+                        </div>
+                        <h3>Workshops</h3>
+                        <p>Participate in educational workshops on various mental health topics</p>
+                        <a href="#" class="btn btn-secondary">Learn More</a>
+                    </div>
+                    <div class="service-card">
+                        <div class="service-icon">
+                            <img src="images/resources.jpg" alt="Resources" class="service-img">
+                        </div>
+                        <h3>Resources</h3>
+                        <p>Access curated mental health resources, articles, and self-help guides</p>
+                        <a href="#" class="btn btn-secondary">Learn More</a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="cta">
+            <div class="container">
+                <div class="cta-content">
+                    <h2>Ready to Start Your Mental Wellness Journey?</h2>
+                    <p>Join thousands of users who have transformed their mental health with Menticose</p>
+                    <div class="cta-buttons">
+                        <a href="#" class="btn btn-primary">Get Started Today</a>
+                        <a href="#" class="btn btn-secondary">Contact Us</a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <footer>
+            <div class="container">
+                <div class="footer-content">
+                    <div class="footer-section">
+                        <h3>MindCare</h3>
+                        <p>Your partner in mental wellness and personal growth.</p>
+                    </div>
+                    <div class="footer-section">
+                        <h3>Quick Links</h3>
+                        <ul>
+                            <li><a href="index.html">Home</a></li>
+                            <li><a href="services.html">Services</a></li>
+                            <li><a href="pricing.html">Pricing</a></li>
+                            <li><a href="about.html">About Us</a></li>
+                        </ul>
+                    </div>
+                    <div class="footer-section">
+                        <h3>Resources</h3>
+                        <ul>
+                            <li><a href="#">Blog</a></li>
+                            <li><a href="#">FAQ</a></li>
+                            <li><a href="#">Support</a></li>
+                            <li><a href="#">Privacy Policy</a></li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="footer-bottom">
+                    <p>&copy; 2025 MindCare. All rights reserved.</p>
+                    <p class="created-by">Created with ❤️ by the MindCare Team</p>
+                </div>
+            </div>
+        </footer>
+    </div>
+
+    <div id="login-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Login to Menticose</h2>
+                <button class="close-modal">&times;</button>
+            </div>
+            <form id="login-form">
+                <div class="form-group">
+                    <label for="login-email">Email</label>
+                    <input type="email" id="login-email" required>
+                </div>
+                <div class="form-group">
+                    <label for="login-password">Password</label>
+                    <input type="password" id="login-password" required>
+                </div>
+                <div class="form-group">
+                    <label for="login-role">I am a</label>
+                    <select id="login-role" required>
+                        <option value="">Select Role</option>
+                        <option value="user">User</option>
+                        <option value="therapist">Therapist</option>
+                        <option value="admin">Admin</option>
+                    </select>
+                </div>
+                <button type="submit" class="btn btn-primary" style="width: 100%;">Login</button>
+            </form>
+        </div>
+    </div>
+
+    <div id="register-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Join Menticose</h2>
+                <button class="close-modal">&times;</button>
+            </div>
+            <form id="register-form">
+                <div class="form-group">
+                    <label for="register-name">Full Name</label>
+                    <input type="text" id="register-name" required>
+                </div>
+                <div class="form-group">
+                    <label for="register-email">Email</label>
+                    <input type="email" id="register-email" required>
+                </div>
+                <div class="form-group">
+                    <label for="register-password">Password</label>
+                    <input type="password" id="register-password" required>
+                </div>
+                <div class="form-group">
+                    <label for="register-role">I want to</label>
+                    <select id="register-role" required>
+                        <option value="">Select Option</option>
+                        <option value="user">Get Support</option>
+                        <option value="therapist">Provide Support</option>
+                    </select>
+                </div>
+                <div class="form-group" id="therapist-specialty-group" style="display: none;">
+                    <label for="register-specialty">Specialty</label>
+                    <input type="text" id="register-specialty">
+                </div>
+                <button type="submit" class="btn btn-primary" style="width: 100%;">Create Account</button>
+            </form>
+        </div>
+    </div>
+
+    <script src="js/script.js"></script>
+</body>
+</html>

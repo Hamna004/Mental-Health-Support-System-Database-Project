@@ -1,0 +1,73 @@
+<?php
+
+header('Content-Type: application/json');
+
+$host = 'localhost';
+$dbname = 'dbproject';
+$username = 'root';
+$password = '';
+
+try {
+    $conn = new PDO(
+        "mysql:host=$host;dbname=$dbname;charset=utf8mb4",
+        $username,
+        $password,
+        [
+            PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+            PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC
+        ]
+    );
+    
+    $input = json_decode(file_get_contents('php://input'), true);
+    
+    $therapist_id = $input['therapist_id'] ?? null;
+    $bio = $input['bio'] ?? null;
+    $qualifications = $input['qualifications'] ?? null;
+    $years_of_experience = $input['years_of_experience'] ?? null;
+    $hourly_rate = $input['hourly_rate'] ?? null;
+    $specialisation = $input['specialisation'] ?? null;
+    $is_accepting = $input['is_accepting_new_clients'] ?? 'Y';
+    $phone = $input['phone'] ?? null;
+    
+    if (!$therapist_id) {
+        throw new Exception('Therapist ID is required');
+    }
+
+    $update_profile = "UPDATE THERAPIST_PROFILES SET 
+                      BIO = ?,
+                      QUALIFICATIONS = ?,
+                      YEARS_OF_EXPERIENCE = ?,
+                      HOURLY_RATE = ?,
+                      SPECIALISATION = ?,
+                      IS_ACCEPTING_NEW_CLIENTS = ?
+                      WHERE THERAPIST_ID = ?";
+    
+    $stmt = $conn->prepare($update_profile);
+    $stmt->execute([
+        $bio,
+        $qualifications,
+        $years_of_experience,
+        $hourly_rate,
+        $specialisation,
+        $is_accepting,
+        $therapist_id
+    ]);
+    
+    if ($phone !== null) {
+        $update_phone = "UPDATE USERS SET PHONE_NUMBER = ? WHERE USER_ID = ?";
+        $phone_stmt = $conn->prepare($update_phone);
+        $phone_stmt->execute([$phone, $therapist_id]);
+    }
+    
+    echo json_encode([
+        'success' => true,
+        'message' => 'Profile updated successfully!'
+    ]);
+    
+} catch (Exception $e) {
+    echo json_encode([
+        'success' => false,
+        'message' => $e->getMessage()
+    ]);
+}
+?>

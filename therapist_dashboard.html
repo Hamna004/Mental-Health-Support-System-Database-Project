@@ -1,0 +1,345 @@
+const API_BASE_URL = 'api/';
+
+document.addEventListener('DOMContentLoaded', function() {
+    const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+    if (!currentUser || currentUser.role !== 'user') {
+        window.location.href = 'index.html';
+        return;
+    }
+
+    initializeUserData(currentUser);
+    
+    setupUserDashboard(currentUser);
+    
+    setupEventListeners();
+});
+
+function initializeUserData(user) {
+    if (!localStorage.getItem(`moodHistory_${user.email}`)) {
+        localStorage.setItem(`moodHistory_${user.email}`, JSON.stringify([]));
+    }
+    if (!localStorage.getItem(`journalEntries_${user.email}`)) {
+        localStorage.setItem(`journalEntries_${user.email}`, JSON.stringify([]));
+    }
+}
+
+function setupUserDashboard(user) {
+    document.getElementById('user-greeting').textContent = `Hello, ${user.name}!`;
+    document.getElementById('user-role').textContent = 'Patient';
+    
+    loadUserStats(user);
+    loadTherapistsSessions(user);
+    loadResourcesFromAPI();
+    
+    setupDashboardNavigation();
+}
+
+function setupEventListeners() {
+    const logoutBtn = document.getElementById('logout-btn');
+    if (logoutBtn) {
+        logoutBtn.addEventListener('click', function() {
+            localStorage.removeItem('currentUser');
+            window.location.href = 'index.html';
+        });
+    }
+}
+
+function setupDashboardNavigation() {
+    document.querySelectorAll('.dashboard-link').forEach(link => {
+        link.addEventListener('click', function(e) {
+            e.preventDefault();
+            const sectionId = this.getAttribute('data-section');
+            
+            document.querySelectorAll('.dashboard-section').forEach(section => {
+                section.classList.remove('active');
+            });
+            
+            const targetSection = document.getElementById(sectionId);
+            if (targetSection) {
+                targetSection.classList.add('active');
+            }
+            
+            document.querySelectorAll('.dashboard-link').forEach(l => l.classList.remove('active'));
+            this.classList.add('active');
+            
+            loadSectionData(sectionId);
+        });
+    });
+}
+
+function loadSectionData(sectionId) {
+    const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+    
+    switch(sectionId) {
+        case 'stats':
+            loadUserStats(currentUser);
+            break;
+        case 'therapists':
+            break;
+        case 'resources':
+            loadResourcesFromAPI();
+            break;
+        case 'reports':
+            generateReports(currentUser);
+            break;
+    }
+}
+
+function loadUserStats(user) {
+    const statsGrid = document.getElementById('stats-grid');
+    if (!statsGrid) return;
+    
+    statsGrid.innerHTML = '';
+    
+    fetchSessionsFromAPI(user.id).then(sessions => {
+        const stats = [
+            { 
+                title: 'Mood Entries', 
+                value: '0', 
+                icon: '😊',
+                color: '#4a6fa5'
+            },
+            { 
+                title: 'Journal Entries', 
+                value: '0', 
+                icon: '📝',
+                color: '#6b8cbc'
+            },
+            { 
+                title: 'Therapy Sessions', 
+                value: sessions.length, 
+                icon: '👨‍⚕️',
+                color: '#ff7e5f'
+            },
+            { 
+                title: 'Resources Viewed', 
+                value: '5', 
+                icon: '📚',
+                color: '#28a745'
+            }
+        ];
+        
+        stats.forEach(stat => {
+            const statCard = document.createElement('div');
+            statCard.className = 'stat-card';
+            statCard.innerHTML = `
+                <div class="stat-icon" style="background-color: ${stat.color}20; color: ${stat.color}">${stat.icon}</div>
+                <div class="stat-value">${stat.value}</div>
+                <div class="stat-title">${stat.title}</div>
+            `;
+            statsGrid.appendChild(statCard);
+        });
+    });
+}
+
+async function fetchSessionsFromAPI(userId) {
+    try {
+        const response = await fetch(`${API_BASE_URL}session.php?user_id=${userId}&role=PATIENT`, {
+            method: 'GET',
+            headers: { 'Content-Type': 'application/json' }
+        });
+        
+        const data = await response.json();
+        if (data.success) {
+            return data.sessions || [];
+        } else {
+            console.error('Error fetching sessions:', data.message);
+            return [];
+        }
+    } catch (error) {
+        console.error('API Error:', error);
+        return [];
+    }
+}
+
+async function bookSessionAPI(patientId, therapistId, scheduledTime, duration = 60) {
+    try {
+        const response = await fetch(`${API_BASE_URL}session.php`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                patient_id: patientId,
+                therapist_id: therapistId,
+                scheduled_time: scheduledTime,
+                duration: duration
+            })
+        });
+        
+        const data = await response.json();
+        return data;
+    } catch (error) {
+        console.error('API Error:', error);
+        return { success: false, message: error.message };
+    }
+}
+
+async function updateSessionAPI(sessionId, status, scheduledTime = null) {
+    try {
+        const response = await fetch(`${API_BASE_URL}session.php`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                session_id: sessionId,
+                status: status,
+                scheduled_time: scheduledTime
+            })
+        });
+        
+        const data = await response.json();
+        return data;
+    } catch (error) {
+        console.error('API Error:', error);
+        return { success: false, message: error.message };
+    }
+}
+
+async function cancelSessionAPI(sessionId) {
+    try {
+        const response = await fetch(`${API_BASE_URL}session.php`, {
+            method: 'DELETE',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ session_id: sessionId })
+        });
+        
+        const data = await response.json();
+        return data;
+    } catch (error) {
+        console.error('API Error:', error);
+        return { success: false, message: error.message };
+    }
+}
+
+function loadTherapistsSessions(user) {
+    const sessionsList = document.getElementById('sessions-list');
+    if (!sessionsList) return;
+    
+    sessionsList.innerHTML = '<div class="loading">Loading sessions...</div>';
+    
+    fetchSessionsFromAPI(user.id).then(sessions => {
+        sessionsList.innerHTML = '';
+        
+        if (sessions.length === 0) {
+            sessionsList.innerHTML = '<div class="empty-state">No sessions booked yet.</div>';
+            return;
+        }
+        
+        sessions.forEach(session => {
+            const sessionCard = document.createElement('div');
+            sessionCard.className = 'session-card';
+            sessionCard.innerHTML = `
+                <div class="session-header">
+                    <h3>${session.therapist_name || 'Therapist'}</h3>
+                    <span class="session-status ${(session.STATUS || '').toLowerCase()}">${session.STATUS}</span>
+                </div>
+                <div class="session-details">
+                    <p><strong>Date & Time:</strong> ${formatDate(session.SCHEDULED_DATE_TIME)}</p>
+                    <p><strong>Duration:</strong> ${session.DURATION_MINUTES} minutes</p>
+                    ${session.SESSION_NOTES ? `<p><strong>Notes:</strong> ${session.SESSION_NOTES}</p>` : ''}
+                </div>
+                <div class="session-actions">
+                    <button class="btn btn-secondary" onclick="rescheduleSession(${session.SESSION_ID})">Reschedule</button>
+                    <button class="btn btn-danger" onclick="cancelSession(${session.SESSION_ID})">Cancel</button>
+                </div>
+            `;
+            sessionsList.appendChild(sessionCard);
+        });
+    });
+}
+
+function cancelSession(sessionId) {
+    if (confirm('Are you sure you want to cancel this session?')) {
+        cancelSessionAPI(sessionId).then(result => {
+            if (result.success) {
+                alert('Session cancelled successfully');
+                const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+                loadTherapistsSessions(currentUser);
+            } else {
+                alert('Error: ' + result.message);
+            }
+        });
+    }
+}
+
+function rescheduleSession(sessionId) {
+    const newDateTime = prompt('Enter new date and time (YYYY-MM-DD HH:MM:SS):');
+    if (newDateTime) {
+        updateSessionAPI(sessionId, null, newDateTime).then(result => {
+            if (result.success) {
+                alert('Session rescheduled successfully');
+                const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+                loadTherapistsSessions(currentUser);
+            } else {
+                alert('Error: ' + result.message);
+            }
+        });
+    }
+}
+
+async function fetchResourcesFromAPI() {
+    try {
+        const response = await fetch(`${API_BASE_URL}resources.php`, {
+            method: 'GET',
+            headers: { 'Content-Type': 'application/json' }
+        });
+        
+        const data = await response.json();
+        if (data.success) {
+            return data.resources || [];
+        } else {
+            console.error('Error fetching resources:', data.message);
+            return [];
+        }
+    } catch (error) {
+        console.error('API Error:', error);
+        return [];
+    }
+}
+
+function loadResourcesFromAPI() {
+    const resourcesList = document.getElementById('resources-list');
+    if (!resourcesList) return;
+    
+    resourcesList.innerHTML = '<div class="loading">Loading resources...</div>';
+    
+    fetchResourcesFromAPI().then(resources => {
+        resourcesList.innerHTML = '';
+        
+        if (resources.length === 0) {
+            resourcesList.innerHTML = '<div class="empty-state">No resources available yet.</div>';
+            return;
+        }
+        
+        resources.forEach(resource => {
+            const resourceCard = document.createElement('div');
+            resourceCard.className = 'resource-card';
+            const resourceType = resource.TYPE || resource.RESOURCE_TYPE || 'ARTICLE';
+            resourceCard.innerHTML = `
+                <div class="resource-type ${resourceType.toLowerCase()}">${resourceType.toUpperCase()}</div>
+                <h3>${resource.TITLE}</h3>
+                <p class="resource-description">${resource.DESCRIPTION || ''}</p>
+                <div class="resource-meta">
+                    <span class="resource-uploader">By: ${resource.uploaded_by || 'Therapist'}</span>
+                    <span class="resource-date">${formatDate(resource.CREATED_AT || resource.DATE_UPLOADED)}</span>
+                </div>
+                <button class="btn btn-secondary" onclick="window.open('${resource.URL || resource.EXTERNAL_LINK || '#'}', '_blank')">
+                    ${resourceType === 'VIDEO' ? '🎬 Watch Video' : resourceType === 'BOOK' ? '📘 Read Book' : '📖 Read Article'}
+                </button>
+            `;
+            resourcesList.appendChild(resourceCard);
+        });
+    });
+}
+
+function generateReports(user) {
+    const reportsContent = document.getElementById('reports-content');
+    
+    if (!reportsContent) return;
+    
+    reportsContent.innerHTML = '<div class="empty-state">Reports feature coming soon!</div>';
+}
+
+function formatDate(dateString) {
+    if (!dateString) return 'N/A';
+    const date = new Date(dateString);
+    return date.toLocaleString();
+}

@@ -1,0 +1,341 @@
+
+const API_BASE_URL = 'api/';
+let currentUser = null;
+
+const loginBtn = document.getElementById('login-btn');
+const registerBtn = document.getElementById('register-btn');
+const loginModal = document.getElementById('login-modal');
+const registerModal = document.getElementById('register-modal');
+const closeModalBtns = document.querySelectorAll('.close-modal');
+const loginForm = document.getElementById('login-form');
+const registerForm = document.getElementById('register-form');
+const registerRoleSelect = document.getElementById('register-role');
+const therapistSpecialtyGroup = document.getElementById('therapist-specialty-group');
+const getStartedBtn = document.querySelector('.hero-buttons .btn-primary');
+const serviceLinks = document.querySelectorAll('a[href*="therapy"], a[href*="journaling"], a[href*="mood-tracking"], a[href*="booking"], a[href*="session"]');
+const learnMoreButtons = document.querySelectorAll('.btn-secondary');
+
+function initializeSampleData() {
+    if (!localStorage.getItem('allUsers')) {
+        const sampleUsers = [
+            {
+                id: 1,
+                name: "John Doe",
+                email: "john@example.com",
+                password: "password123",
+                role: "user",
+                status: "active",
+                therapistId: 2
+            },
+            {
+                id: 2,
+                name: "Dr. Sarah Johnson",
+                email: "sarah@example.com",
+                password: "password123",
+                role: "therapist",
+                specialty: "Anxiety & Depression",
+                status: "active"
+            },
+            {
+                id: 3,
+                name: "Admin User",
+                email: "admin@example.com",
+                password: "password123",
+                role: "admin",
+                status: "active"
+            },
+            {
+                id: 4,
+                name: "Dr. Michael Chen",
+                email: "michael@example.com",
+                password: "password123",
+                role: "therapist",
+                specialty: "Cognitive Behavioral Therapy",
+                status: "active"
+            },
+            {
+                id: 5,
+                name: "Emily Wilson",
+                email: "emily@example.com",
+                password: "password123",
+                role: "user",
+                status: "active",
+                therapistId: 4
+            }
+        ];
+        localStorage.setItem('allUsers', JSON.stringify(sampleUsers));
+    }
+}
+
+async function loginUserAPI(email, password, role) {
+    try {
+        console.log('→ Attempting API login...');
+        const response = await fetch(`${API_BASE_URL}login.php`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email, password, role })
+        });
+        
+        const result = await response.json();
+        console.log('API Response:', result);
+        return result;
+    } catch (error) {
+        console.error('API Login Error:', error);
+        return null;
+    }
+}
+
+async function registerUserAPI(userData) {
+    try {
+        console.log('→ Attempting API registration...');
+        const response = await fetch(`${API_BASE_URL}register.php`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(userData)
+        });
+        
+        const result = await response.json();
+        console.log('API Response:', result);
+        return result;
+    } catch (error) {
+        console.error('API Registration Error:', error);
+        return null;
+    }
+}
+
+if (loginBtn) loginBtn.addEventListener('click', () => showModal(loginModal));
+if (registerBtn) registerBtn.addEventListener('click', () => showModal(registerModal));
+
+closeModalBtns.forEach(btn => {
+    btn.addEventListener('click', (e) => {
+        e.target.closest('.modal').style.display = 'none';
+    });
+});
+
+window.addEventListener('click', (e) => {
+    if (e.target === loginModal) loginModal.style.display = 'none';
+    if (e.target === registerModal) registerModal.style.display = 'none';
+});
+
+if (registerRoleSelect) {
+    registerRoleSelect.addEventListener('change', () => {
+        therapistSpecialtyGroup.style.display = registerRoleSelect.value === 'therapist' ? 'block' : 'none';
+    });
+}
+
+if (loginForm) loginForm.addEventListener('submit', handleLogin);
+if (registerForm) registerForm.addEventListener('submit', handleRegistration);
+
+if (getStartedBtn) {
+    getStartedBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        showModal(registerModal);
+    });
+}
+
+if (serviceLinks.length > 0) {
+    serviceLinks.forEach(link => {
+        link.addEventListener('click', (e) => {
+            const savedUser = localStorage.getItem('currentUser');
+            if (!savedUser) {
+                e.preventDefault();
+                alert('Please login or register to access this service');
+                showModal(registerModal);
+            }
+        });
+    });
+}
+
+if (learnMoreButtons.length > 0) {
+    learnMoreButtons.forEach(button => {
+        button.addEventListener('click', (e) => {
+            const href = button.getAttribute('href');
+            if (href && !href.includes('services.html')) {
+                const savedUser = localStorage.getItem('currentUser');
+                if (!savedUser) {
+                    e.preventDefault();
+                    alert('Please login or register to access this service');
+                    showModal(registerModal);
+                }
+            }
+        });
+    });
+}
+
+function showModal(modal) {
+    if (modal) modal.style.display = 'flex';
+}
+
+async function handleLogin(e) {
+    e.preventDefault();
+    
+    const email = document.getElementById('login-email').value.trim();
+    const password = document.getElementById('login-password').value.trim();
+    const role = document.getElementById('login-role').value;
+    
+    if (!email || !password || !role) {
+        alert('Please fill in all fields');
+        return;
+    }
+    
+    let user = null;
+    
+    try {
+        const apiResult = await loginUserAPI(email, password, role);
+        if (apiResult && apiResult.success) {
+            user = apiResult.user;
+            console.log('✓ API login successful');
+        } else if (apiResult && apiResult.message) {
+            alert(apiResult.message);
+            return;
+        }
+    } catch (error) {
+        console.warn('API authentication failed, using fallback...');
+    }
+    
+    if (!user) {
+        console.log('→ Using localStorage fallback...');
+        const allUsers = JSON.parse(localStorage.getItem('allUsers') || '[]');
+        user = allUsers.find(u => u.email === email && u.password === password && u.role === role);
+    }
+    
+    if (user) {
+        if (!user.id) {
+            user.id = Math.floor(Math.random() * 10000) + 1;
+        }
+        
+        currentUser = user;
+        localStorage.setItem('currentUser', JSON.stringify(currentUser));
+        console.log('✓ Login successful:', user.name, '| Role:', user.role, '| ID:', user.id);
+        
+        loginModal.style.display = 'none';
+        loginForm.reset();
+        
+        redirectToDashboard(user.role);
+    } else {
+        alert('❌ Invalid email, password, or role');
+    }
+}
+
+async function handleRegistration(e) {
+    e.preventDefault();
+    
+    const name = document.getElementById('register-name').value.trim();
+    const email = document.getElementById('register-email').value.trim();
+    const password = document.getElementById('register-password').value.trim();
+    const role = document.getElementById('register-role').value;
+    const specialty = document.getElementById('register-specialty').value.trim();
+    
+    if (!name || !email || !password || !role) {
+        alert('Please fill in all required fields');
+        return;
+    }
+    
+    if (role === 'therapist' && !specialty) {
+        alert('Please specify your specialty');
+        return;
+    }
+    
+    const userData = { name, email, password, role };
+    if (role === 'therapist') userData.specialty = specialty;
+    
+    let newUser = null;
+    let apiSuccess = false;
+    
+    try {
+        const apiResult = await registerUserAPI(userData);
+        if (apiResult && apiResult.success) {
+            newUser = apiResult.user;
+            apiSuccess = true;
+            console.log('✓ API registration successful');
+        } else if (apiResult && apiResult.message) {
+            alert(apiResult.message);
+            return;
+        }
+    } catch (error) {
+        console.warn('API registration failed, using fallback...');
+    }
+    
+    if (!newUser) {
+        console.log('→ Using localStorage fallback...');
+        const allUsers = JSON.parse(localStorage.getItem('allUsers') || '[]');
+        
+        if (allUsers.find(u => u.email === email)) {
+            alert('This email is already registered');
+            return;
+        }
+        
+        newUser = {
+            id: Math.max(...allUsers.map(u => u.id || 0)) + 1,
+            name,
+            email,
+            password,
+            role,
+            specialty: role === 'therapist' ? specialty : undefined,
+            status: "active"
+        };
+        
+        allUsers.push(newUser);
+        localStorage.setItem('allUsers', JSON.stringify(allUsers));
+    }
+    
+    currentUser = newUser;
+    localStorage.setItem('currentUser', JSON.stringify(currentUser));
+    
+    console.log('✓ Registration successful:', newUser.name, '| Role:', newUser.role, '| ID:', newUser.id);
+    
+    registerModal.style.display = 'none';
+    registerForm.reset();
+    if (therapistSpecialtyGroup) therapistSpecialtyGroup.style.display = 'none';
+    
+    redirectToDashboard(newUser.role);
+}
+
+function redirectToDashboard(role) {
+    console.log('→ Redirecting to dashboard...');
+    if (role === 'user') {
+        window.location.href = 'user_dashboard.html';
+    } else if (role === 'therapist') {
+        window.location.href = 'therapist_dashboard.html';
+    } else if (role === 'admin') {
+        window.location.href = 'admin_dashboard.html';
+    } else {
+        window.location.href = 'index.html';
+    }
+}
+
+function logout() {
+    console.log('→ Logging out...');
+    currentUser = null;
+    localStorage.removeItem('currentUser');
+    window.location.href = 'index.html';
+}
+
+function checkAuthentication() {
+    const savedUser = localStorage.getItem('currentUser');
+    const currentPage = window.location.pathname;
+    
+    const protectedPages = ['user_dashboard.html', 'therapist_dashboard.html', 'admin_dashboard.html', 'booking.html', 'therapy-sessions.html'];
+    const currentPageName = currentPage.split('/').pop();
+    
+    if (protectedPages.includes(currentPageName) && !savedUser) {
+        alert('Please login to access this page');
+        window.location.href = 'index.html';
+        return false;
+    }
+    
+    return true;
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    console.log('🚀 Initializing MindCare Application...');
+    
+    initializeSampleData();
+    checkAuthentication();
+    
+    const savedUser = localStorage.getItem('currentUser');
+    if (savedUser) {
+        currentUser = JSON.parse(savedUser);
+        console.log('✓ User already logged in:', currentUser.name, '| ID:', currentUser.id);
+    }
+});

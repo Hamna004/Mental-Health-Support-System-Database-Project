@@ -1,0 +1,541 @@
+const API_BASE_URL = 'api/';
+
+document.addEventListener('DOMContentLoaded', function() {
+    const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+    
+    if (!currentUser || currentUser.role.toUpperCase() !== 'THERAPIST') {
+        alert('❌ Access denied. Only therapists can access this page.');
+        window.location.href = 'index.html';
+        return;
+    }
+
+    console.log('✓ Therapist logged in:', currentUser.name, 'ID:', currentUser.id);
+
+    document.getElementById('therapist-name').textContent = currentUser.name;
+
+    loadDashboard(currentUser);
+    
+    loadTherapistProfile();
+    loadTherapistBookings();
+    
+    setupFileInput();
+});
+
+function loadDashboard(user) {
+    loadStats(user);
+}
+
+function loadStats(user) {
+    const statsGrid = document.getElementById('stats-grid');
+    const stats = [
+        { title: 'Resources Uploaded', value: '0', icon: '📚', color: '#667eea' },
+        { title: 'Active Status', value: 'Online', icon: '🟢', color: '#28a745' },
+        { title: 'Total Patients', value: '-', icon: '👥', color: '#ff7e5f' }
+    ];
+
+    statsGrid.innerHTML = stats.map(stat => `
+        <div class="stat-card">
+            <div class="stat-icon" style="color: ${stat.color}">${stat.icon}</div>
+            <div class="stat-value">${stat.value}</div>
+            <div class="stat-title">${stat.title}</div>
+        </div>
+    `).join('');
+}
+
+function switchSection(sectionId, event) {
+    event.preventDefault();
+
+    document.querySelectorAll('.section').forEach(section => {
+        section.classList.remove('active');
+    });
+
+    document.querySelectorAll('.sidebar-menu li').forEach(li => {
+        li.classList.remove('active');
+    });
+
+    document.getElementById(sectionId).classList.add('active');
+    event.target.closest('li').classList.add('active');
+
+    if (sectionId === 'my-resources') {
+        loadMyResources();
+    } else if (sectionId === 'profile') {
+        loadTherapistProfile();
+    } else if (sectionId === 'bookings') {
+        loadTherapistBookings();
+    }
+}
+
+function setupFileInput() {
+    const fileInput = document.getElementById('file');
+    const fileNameDisplay = document.getElementById('file-name');
+
+    if (fileInput && fileNameDisplay) {
+        fileInput.addEventListener('change', function() {
+            if (this.files.length > 0) {
+                fileNameDisplay.textContent = '✓ ' + this.files[0].name;
+            } else {
+                fileNameDisplay.textContent = 'No file chosen';
+            }
+        });
+    }
+}
+
+async function handleUpload(event) {
+    event.preventDefault();
+
+    const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+    const title = document.getElementById('title').value.trim();
+    const type = document.getElementById('type').value;
+    const category = document.getElementById('category').value;
+    const description = document.getElementById('description').value.trim();
+    const externalLink = document.getElementById('external-link').value.trim();
+
+    if (!title || !type || !category) {
+        showAlert('❌ Please fill all required fields', 'error');
+        return;
+    }
+
+    const formData = new FormData();
+    formData.append('therapist_id', currentUser.id);
+    formData.append('title', title);
+    formData.append('resource_type', type);
+    formData.append('category', category);
+    formData.append('description', description);
+    
+    if (externalLink) {
+        formData.append('external_link', externalLink);
+    }
+
+    const fileInput = document.getElementById('file');
+    if (fileInput && fileInput.files && fileInput.files.length > 0) {
+        formData.append('file', fileInput.files[0]);
+    }
+
+    try {
+        showAlert('⏳ Uploading resource...', 'success');
+        
+        const response = await fetch(`${API_BASE_URL}resources.php`, {
+            method: 'POST',
+            body: formData
+        });
+
+        const data = await response.json();
+
+        if (data.success) {
+            showAlert('✅ Resource uploaded successfully!', 'success');
+            document.getElementById('upload-form').reset();
+            
+            const fileNameDisplay = document.getElementById('file-name');
+            if (fileNameDisplay) {
+                fileNameDisplay.textContent = 'No file chosen';
+            }
+            
+            setTimeout(() => {
+                loadMyResources();
+            }, 1000);
+        } else {
+            showAlert('❌ Error: ' + (data.message || 'Upload failed'), 'error');
+        }
+    } catch (error) {
+        console.error('Upload error:', error);
+        showAlert('❌ Upload failed: ' + error.message, 'error');
+    }
+}
+
+async function loadMyResources() {
+    const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+    const resourcesList = document.getElementById('resources-list');
+    resourcesList.innerHTML = '<div style="padding: 40px; text-align: center; color: #667eea;">⏳ Loading resources...</div>';
+
+    try {
+        const response = await fetch(`${API_BASE_URL}resources.php`);
+        const data = await response.json();
+
+        if (data.success && data.resources && data.resources.length > 0) {
+            // ✅ FILTER TO SHOW ONLY THIS THERAPIST'S RESOURCES
+            const myResources = data.resources.filter(r => r.THERAPIST_ID === currentUser.id);
+            
+            if (myResources.length === 0) {
+                resourcesList.innerHTML = '<div style="padding: 40px; text-align: center; color: #999;">📭 You haven\'t uploaded any resources yet</div>';
+                return;
+            }
+            
+            resourcesList.innerHTML = '';
+            myResources.forEach(resource => {
+                // Rest of your existing code for displaying resource cards
+                const resourceCard = document.createElement('div');
+                resourceCard.className = 'form-section';
+                
+                const approvalStatus = resource.IS_APPROVED === 'Y' 
+                    ? '<span style="color: #28a745; font-weight: bold;">✓ Approved</span>'
+                    : '<span style="color: #ffc107; font-weight: bold;">⏳ Pending</span>';
+
+                resourceCard.innerHTML = `
+                    <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 15px;">
+                        <div>
+                            <h4 style="margin-bottom: 5px;">${resource.TITLE}</h4>
+                            <p style="color: #666; font-size: 14px; margin: 0;">${resource.CATEGORY}</p>
+                        </div>
+                        <div style="text-align: right;">
+                            <div style="font-size: 12px; margin-bottom: 5px;">${resource.RESOURCE_TYPE}</div>
+                            <div>${approvalStatus}</div>
+                        </div>
+                    </div>
+                    <p style="color: #666; margin: 10px 0;">${resource.DESCRIPTION || 'No description'}</p>
+                    <div style="display: flex; gap: 10px; margin-top: 15px; border-top: 1px solid #e0e0e0; padding-top: 15px;">
+                        ${resource.FILE_URL ? `<a href="${resource.FILE_URL}" download style="flex: 1; padding: 10px; text-align: center; background: #667eea; color: white; border-radius: 4px; text-decoration: none; font-weight: 600;">⬇️ Download</a>` : ''}
+                        <button onclick="deleteResource(${resource.RESOURCE_ID})" style="flex: 1; padding: 10px; background: #dc3545; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: 600;">🗑️ Delete</button>
+                    </div>
+                `;
+                resourcesList.appendChild(resourceCard);
+            });
+        } else {
+            resourcesList.innerHTML = '<div style="padding: 40px; text-align: center; color: #999;">📭 No resources uploaded yet</div>';
+        }
+    } catch (error) {
+        console.error('Error loading resources:', error);
+        resourcesList.innerHTML = '<div style="padding: 40px; text-align: center; color: #dc3545;">❌ Error loading resources</div>';
+    }
+}
+
+async function deleteResource(resourceId) {
+    if (!confirm('Are you sure you want to delete this resource?')) {
+        return;
+    }
+
+    try {
+        const response = await fetch(`${API_BASE_URL}resources.php`, {
+            method: 'DELETE',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ resource_id: resourceId })
+        });
+
+        const data = await response.json();
+
+        if (data.success) {
+            showAlert('✅ Resource deleted successfully', 'success');
+            loadMyResources();
+        } else {
+            showAlert('❌ Error: ' + data.message, 'error');
+        }
+    } catch (error) {
+        showAlert('❌ Delete failed: ' + error.message, 'error');
+    }
+}
+
+
+async function loadTherapistProfile() {
+    const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+    
+    try {
+        const response = await fetch(`${API_BASE_URL}get_therapist_profile.php?therapist_id=${currentUser.id}`);
+        const data = await response.json();
+        
+        if (data.success) {
+            displayTherapistProfileForm(data.profile);
+        }
+    } catch (error) {
+        console.error('Error loading profile:', error);
+    }
+}
+
+function displayTherapistProfileForm(profile) {
+    if (document.getElementById('therapist-bio')) {
+        document.getElementById('therapist-bio').value = profile.bio || '';
+        document.getElementById('therapist-qualifications').value = profile.qualifications || '';
+        document.getElementById('therapist-experience').value = profile.experience || 0;
+        document.getElementById('therapist-rate').value = profile.hourlyRate || 0;
+        document.getElementById('therapist-specialisation').value = profile.specialty || '';
+        document.getElementById('therapist-phone').value = profile.phone && profile.phone !== 'Not provided' ? profile.phone : '';
+        document.getElementById('accepting-clients').checked = profile.acceptingClients;
+        
+        document.getElementById('display-name').textContent = profile.name;
+        document.getElementById('display-email').value = profile.email;
+        
+        if (document.getElementById('display-experience')) {
+            document.getElementById('display-experience').textContent = profile.experience || 'N/A';
+        }
+        if (document.getElementById('display-sessions')) {
+            document.getElementById('display-sessions').textContent = profile.completedSessions || 0;
+        }
+        if (document.getElementById('display-rate')) {
+            document.getElementById('display-rate').textContent = profile.hourlyRate ? '$' + profile.hourlyRate : 'N/A';
+        }
+    }
+}
+
+async function updateTherapistProfile(event) {
+    event.preventDefault();
+    
+    const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+    
+    const profileData = {
+        therapist_id: currentUser.id,
+        bio: document.getElementById('therapist-bio').value,
+        qualifications: document.getElementById('therapist-qualifications').value,
+        years_of_experience: document.getElementById('therapist-experience').value,
+        hourly_rate: document.getElementById('therapist-rate').value,
+        specialisation: document.getElementById('therapist-specialisation').value,
+        phone: document.getElementById('therapist-phone').value,
+        is_accepting_new_clients: document.getElementById('accepting-clients').checked ? 'Y' : 'N'
+    };
+    
+    try {
+        const response = await fetch(`${API_BASE_URL}update_therapist_profile.php`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(profileData)
+        });
+        
+        const result = await response.json();
+        
+        if (result.success) {
+            showToast('success', 'Profile Updated!', 'Your profile has been saved successfully');
+            loadTherapistProfile();
+        } else {
+            showToast('error', 'Update Failed', result.message);
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        showToast('error', 'Error', 'Failed to update profile');
+    }
+}
+
+
+async function loadTherapistBookings() {
+    const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+    
+    try {
+        const response = await fetch(`${API_BASE_URL}get_therapist_bookings.php?therapist_id=${currentUser.id}`);
+        const data = await response.json();
+        
+        if (data.success) {
+            displayBookings(data.bookings);
+            
+            const upcoming = data.bookings.filter(b => 
+                b.status === 'BOOKED' && new Date(b.scheduled_datetime) > new Date()
+            );
+            if (document.getElementById('upcoming-count')) {
+                document.getElementById('upcoming-count').textContent = upcoming.length;
+            }
+        }
+    } catch (error) {
+        console.error('Error loading bookings:', error);
+    }
+}
+
+function displayBookings(bookings) {
+    const container = document.getElementById('bookings-list');
+    
+    if (!container) return;
+    
+    if (bookings.length === 0) {
+        container.innerHTML = `
+            <div style="text-align: center; padding: 40px; color: #999;">
+                <i class="fas fa-calendar" style="font-size: 48px; margin-bottom: 16px;"></i>
+                <p>No bookings yet</p>
+            </div>
+        `;
+        return;
+    }
+    
+    const upcoming = bookings.filter(b => b.status === 'BOOKED' && new Date(b.scheduled_datetime) > new Date());
+    const past = bookings.filter(b => b.status === 'COMPLETED');
+    const cancelled = bookings.filter(b => b.status === 'CANCELLED');
+    
+    container.innerHTML = `
+        <div class="bookings-tabs">
+            <button class="tab-btn active" onclick="showBookingsTab('upcoming')">
+                Upcoming (${upcoming.length})
+            </button>
+            <button class="tab-btn" onclick="showBookingsTab('past')">
+                Past (${past.length})
+            </button>
+            <button class="tab-btn" onclick="showBookingsTab('cancelled')">
+                Cancelled (${cancelled.length})
+            </button>
+        </div>
+        
+        <div id="upcoming-bookings" class="bookings-tab-content active">
+            ${upcoming.length > 0 ? upcoming.map(createBookingCard).join('') : '<p style="text-align:center;color:#999;padding:40px;">No upcoming bookings</p>'}
+        </div>
+        
+        <div id="past-bookings" class="bookings-tab-content">
+            ${past.length > 0 ? past.map(createBookingCard).join('') : '<p style="text-align:center;color:#999;padding:40px;">No past bookings</p>'}
+        </div>
+        
+        <div id="cancelled-bookings" class="bookings-tab-content">
+            ${cancelled.length > 0 ? cancelled.map(createBookingCard).join('') : '<p style="text-align:center;color:#999;padding:40px;">No cancelled bookings</p>'}
+        </div>
+    `;
+}
+
+function createBookingCard(booking) {
+    const date = new Date(booking.scheduled_datetime);
+    const dateStr = date.toLocaleDateString('en-US', { 
+        weekday: 'short',
+        year: 'numeric', 
+        month: 'short', 
+        day: 'numeric' 
+    });
+    const timeStr = date.toLocaleTimeString('en-US', { 
+        hour: '2-digit', 
+        minute: '2-digit' 
+    });
+    
+    const statusColors = {
+        'BOOKED': 'blue',
+        'COMPLETED': 'green',
+        'CANCELLED': 'red',
+        'NO-SHOW': 'gray'
+    };
+    
+    return `
+        <div class="booking-card">
+            <div class="booking-header">
+                <div class="booking-patient">
+                    <div class="patient-avatar">👤</div>
+                    <div>
+                        <h4>${booking.patient.name}</h4>
+                        <p>${booking.patient.email}</p>
+                    </div>
+                </div>
+                <span class="booking-status status-${statusColors[booking.status]}">
+                    ${booking.status}
+                </span>
+            </div>
+            
+            <div class="booking-details">
+                <div class="booking-detail">
+                    <i class="fas fa-calendar"></i>
+                    <span>${dateStr}</span>
+                </div>
+                <div class="booking-detail">
+                    <i class="fas fa-clock"></i>
+                    <span>${timeStr} (${booking.duration} min)</span>
+                </div>
+                ${booking.patient.phone ? `
+                <div class="booking-detail">
+                    <i class="fas fa-phone"></i>
+                    <span>${booking.patient.phone}</span>
+                </div>
+                ` : ''}
+            </div>
+            
+            ${booking.notes ? `
+            <div class="booking-notes">
+                <strong>Patient Notes:</strong>
+                <p>${booking.notes}</p>
+            </div>
+            ` : ''}
+            
+            ${booking.status === 'BOOKED' ? `
+            <div class="booking-actions">
+                <button class="btn-booking btn-complete" onclick="updateBookingStatus(${booking.session_id}, 'COMPLETED')">
+                    <i class="fas fa-check"></i> Mark Complete
+                </button>
+                <button class="btn-booking btn-cancel" onclick="updateBookingStatus(${booking.session_id}, 'CANCELLED')">
+                    <i class="fas fa-times"></i> Cancel
+                </button>
+            </div>
+            ` : ''}
+        </div>
+    `;
+}
+
+function showBookingsTab(tab) {
+    document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+    event.target.classList.add('active');
+    
+    document.querySelectorAll('.bookings-tab-content').forEach(content => {
+        content.classList.remove('active');
+    });
+    document.getElementById(`${tab}-bookings`).classList.add('active');
+}
+
+async function updateBookingStatus(sessionId, newStatus) {
+    if (!confirm(`Are you sure you want to mark this session as ${newStatus}?`)) {
+        return;
+    }
+    
+    try {
+        const response = await fetch(`${API_BASE_URL}update_booking_status.php`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                session_id: sessionId,
+                status: newStatus
+            })
+        });
+        
+        const result = await response.json();
+        
+        if (result.success) {
+            showToast('success', 'Updated!', 'Booking status updated');
+            loadTherapistBookings();
+        } else {
+            showToast('error', 'Failed', result.message);
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        showToast('error', 'Error', 'Failed to update booking');
+    }
+}
+
+
+function showToast(type, title, message) {
+    const existingToast = document.querySelector('.toast-overlay');
+    if (existingToast) existingToast.remove();
+    
+    const overlay = document.createElement('div');
+    overlay.className = 'toast-overlay';
+    
+    const toast = document.createElement('div');
+    toast.className = `toast-notification toast-${type}`;
+    
+    const icon = type === 'success' ? '✓' : '✕';
+    
+    toast.innerHTML = `
+        <div class="toast-icon">${icon}</div>
+        <h3>${title}</h3>
+        <p>${message}</p>
+    `;
+    
+    overlay.appendChild(toast);
+    document.body.appendChild(overlay);
+    
+    setTimeout(() => {
+        toast.style.animation = 'toastPopOut 0.3s ease forwards';
+        overlay.style.animation = 'fadeOut 0.3s ease forwards';
+        setTimeout(() => overlay.remove(), 300);
+    }, 2500);
+    
+    overlay.addEventListener('click', () => {
+        toast.style.animation = 'toastPopOut 0.3s ease forwards';
+        overlay.style.animation = 'fadeOut 0.3s ease forwards';
+        setTimeout(() => overlay.remove(), 300);
+    });
+}
+
+function showAlert(message, type) {
+    const alertDiv = document.getElementById('alert');
+    if (alertDiv) {
+        alertDiv.textContent = message;
+        alertDiv.className = `alert show alert-${type}`;
+        
+        setTimeout(() => {
+            alertDiv.classList.remove('show');
+        }, 5000);
+    }
+}
+
+function logout() {
+    if (confirm('Are you sure you want to logout?')) {
+        localStorage.removeItem('currentUser');
+        window.location.href = 'index.html';
+    }
+}

@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pricing Plans - MindCare</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div id="pricing-page">
+        <header>
+            <div class="container header-content">
+                <div class="logo">MindCare</div>
+                <nav>
+                    <ul>
+                        <li><a href="index.html">HOME</a></li>
+                        <li><a href="services.html">SERVICES</a></li>
+                        <li><a href="pricing.html" class="active">PRICING</a></li>
+                        <li><a href="testimonials.html">TESTIMONIALS</a></li>
+                        <li><a href="about.html">ABOUT US</a></li>
+                        <li><a href="contact.html">CONTACT US</a></li>
+                    </ul>
+                </nav>
+             <div class="auth-buttons">
+    <button class="btn btn-secondary" id="login-btn">Login</button>
+    <button class="btn btn-primary" id="register-btn">Register</button>
+</div>
+            </div>
+        </header>
+
+        <section class="page-header">
+            <div class="container">
+                <h1>Our Pricing Plans</h1>
+                <p>Choose the plan that works best for your mental wellness journey</p>
+            </div>
+        </section>
+
+        
+
+        <section class="pricing-plans">
+            <div class="container">
+                <div class="pricing-grid">
+                    <div class="pricing-card">
+                        <div class="pricing-header">
+                            <h3>Basic</h3>
+                            <div class="price">$0<span>/month</span></div>
+                            <p>Perfect for getting started with mental wellness</p>
+                        </div>
+                        <div class="pricing-features">
+                            <ul>
+                                <li><i class="fas fa-check"></i> Mood Tracking</li>
+                                <li><i class="fas fa-check"></i> Basic Journal Entries</li>
+                                <li><i class="fas fa-check"></i> Community Support Forum</li>
+                                <li><i class="fas fa-check"></i> Limited Resources Access</li>
+                                <li><i class="fas fa-times"></i> Therapist Matching</li>
+                                <li><i class="fas fa-times"></i> Video Sessions</li>
+                                <li><i class="fas fa-times"></i> Premium Resources</li>
+                                <li><i class="fas fa-times"></i> Priority Support</li>
+                            </ul>
+                        </div>
+                        <div class="pricing-footer">
+                            <button class="btn btn-primary">Get Started Free</button>
+                        </div>
+                    </div>
+
+                    <div class="pricing-card featured">
+                        <div class="popular-badge">Most Popular</div>
+                        <div class="pricing-header">
+                            <h3>Premium</h3>
+                            <div class="price">$29<span>/month</span></div>
+                            <p>Comprehensive mental health support</p>
+                        </div>
+                        <div class="pricing-features">
+                            <ul>
+                                <li><i class="fas fa-check"></i> All Basic Features</li>
+                                <li><i class="fas fa-check"></i> Unlimited Journal Entries</li>
+                                <li><i class="fas fa-check"></i> Therapist Matching</li>
+                                <li><i class="fas fa-check"></i> 4 Video Sessions/Month</li>
+                                <li><i class="fas fa-check"></i> Premium Resources Library</li>
+                                <li><i class="fas fa-check"></i> Progress Reports</li>
+                                <li><i class="fas fa-check"></i> Custom Reminders</li>
+                                <li><i class="fas fa-times"></i> Group Therapy Sessions</li>
+                            </ul>
+                        </div>
+                        <div class="pricing-footer">
+                            <button class="btn btn-primary">Start Premium Trial</button>
+                        </div>
+                    </div>
+
+                    <div class="pricing-card">
+                        <div class="pricing-header">
+                            <h3>Professional</h3>
+                            <div class="price">$79<span>/month</span></div>
+                            <p>Complete mental wellness package</p>
+                        </div>
+                        <div class="pricing-features">
+                            <ul>
+                                <li><i class="fas fa-check"></i> All Premium Features</li>
+                                <li><i class="fas fa-check"></i> Unlimited Video Sessions</li>
+                                <li><i class="fas fa-check"></i> Group Therapy Sessions</li>
+                                <li><i class="fas fa-check"></i> Personalized Treatment Plans</li>
+                                <li><i class="fas fa-check"></i> Family Support Sessions</li>
+                                <li><i class="fas fa-check"></i> 24/7 Crisis Support</li>
+                                <li><i class="fas fa-check"></i> Progress Tracking Dashboard</li>
+                                <li><i class="fas fa-check"></i> Dedicated Support Manager</li>
+                            </ul>
+                        </div>
+                        <div class="pricing-footer">
+                            <button class="btn btn-primary">Go Professional</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="faq">
+            <div class="container">
+                <h2 class="section-title">Frequently Asked Questions</h2>
+                <div class="faq-grid">
+                    <div class="faq-item">
+                        <h3>Can I change my plan later?</h3>
+                        <p>Yes, you can upgrade or downgrade your plan at any time. Changes will be reflected in your next billing cycle.</p>
+                    </div>
+                    <div class="faq-item">
+                        <h3>Is there a commitment period?</h3>
+                        <p>No, all our plans are month-to-month with no long-term commitment required.</p>
+                    </div>
+                    <div class="faq-item">
+                        <h3>Do you offer discounts for students?</h3>
+                        <p>Yes, we offer a 25% discount for students with valid student ID verification.</p>
+                    </div>
+                    <div class="faq-item">
+                        <h3>What payment methods do you accept?</h3>
+                        <p>We accept all major credit cards, PayPal, and in some regions, we also accept insurance.</p>
+                    </div>
+                    <div class="faq-item">
+                        <h3>Can I cancel anytime?</h3>
+                        <p>Yes, you can cancel your subscription at any time with no cancellation fees.</p>
+                    </div>
+                    <div class="faq-item">
+                        <h3>Is my data secure?</h3>
+                        <p>Absolutely. We use bank-level encryption and comply with all healthcare privacy regulations.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="cta">
+            <div class="container">
+                <div class="cta-content">
+                    <h2>Ready to Start Your Mental Wellness Journey?</h2>
+                    <p>Join thousands of users who have found support and healing through Menticose</p>
+                    <div class="cta-buttons">
+                        <button class="btn btn-primary" id="cta-register-btn">Get Started Today</button>
+                        <a href="contact.html" class="btn btn-secondary">Contact Us</a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <footer>
+            <div class="container">
+                <div class="footer-content">
+                    <div class="footer-section">
+                        <h3>MindCare</h3>
+                        <p>Your partner in mental wellness and personal growth.</p>
+                    </div>
+                    <div class="footer-section">
+                        <h3>Quick Links</h3>
+                        <ul>
+                            <li><a href="index.html">Home</a></li>
+                            <li><a href="services.html">Services</a></li>
+                            <li><a href="pricing.html">Pricing</a></li>
+                            <li><a href="about.html">About Us</a></li>
+                        </ul>
+                    </div>
+                    <div class="footer-section">
+                        <h3>Resources</h3>
+                        <ul>
+                            <li><a href="#">Blog</a></li>
+                            <li><a href="#">FAQ</a></li>
+                            <li><a href="#">Support</a></li>
+                            <li><a href="#">Privacy Policy</a></li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="footer-bottom">
+                    <p>&copy; 2025 MindCare. All rights reserved.</p>
+                    <p class="created-by">Created with ❤️ by the MindCare Team</p>
+                </div>
+            </div>
+        </footer>
+    </div>
+
+    <div id="login-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Login to MindCare</h2>
+                <button class="close-modal">&times;</button>
+            </div>
+            <form id="login-form">
+                <div class="form-group">
+                    <label for="login-email">Email</label>
+                    <input type="email" id="login-email" required>
+                </div>
+                <div class="form-group">
+                    <label for="login-password">Password</label>
+                    <input type="password" id="login-password" required>
+                </div>
+                <div class="form-group">
+                    <label for="login-role">I am a</label>
+                    <select id="login-role" required>
+                        <option value="">Select Role</option>
+                        <option value="user">User</option>
+                        <option value="therapist">Therapist</option>
+                        <option value="admin">Admin</option>
+                    </select>
+                </div>
+                <button type="submit" class="btn btn-primary" style="width: 100%;">Login</button>
+            </form>
+        </div>
+    </div>
+
+    <div id="register-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Join MindCare</h2>
+                <button class="close-modal">&times;</button>
+            </div>
+            <form id="register-form">
+                <div class="form-group">
+                    <label for="register-name">Full Name</label>
+                    <input type="text" id="register-name" required>
+                </div>
+                <div class="form-group">
+                    <label for="register-email">Email</label>
+                    <input type="email" id="register-email" required>
+                </div>
+                <div class="form-group">
+                    <label for="register-password">Password</label>
+                    <input type="password" id="register-password" required>
+                </div>
+                <div class="form-group">
+                    <label for="register-role">I want to</label>
+                    <select id="register-role" required>
+                        <option value="">Select Option</option>
+                        <option value="user">Get Support</option>
+                        <option value="therapist">Provide Support</option>
+                    </select>
+                </div>
+                <div class="form-group" id="therapist-specialty-group" style="display: none;">
+                    <label for="register-specialty">Specialty</label>
+                    <input type="text" id="register-specialty">
+                </div>
+                <button type="submit" class="btn btn-primary" style="width: 100%;">Create Account</button>
+            </form>
+        </div>
+    </div>
+
+    <script src="js/script.js"></script>
+</body>
+</html>
